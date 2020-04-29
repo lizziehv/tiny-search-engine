@@ -1,7 +1,7 @@
-# Your name
+# Lizzie Hernandez Videa
 ## CS50 Winter 2020, Tiny Search Engine
 
-GitHub username:
+GitHub username: lizziehv
 
 To build, run `make`.
 
