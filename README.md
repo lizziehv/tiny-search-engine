@@ -3,8 +3,8 @@
 
 GitHub username: lizziehv
 
-To build, run `make`.
+To build, run `make`. To test crawler, run `make test` from crawler directory.
 
 To clean up, run `make clean`.
 
-*Please replace this text with any comments you have about the overall assignment.  Please supply a README for each subdirectory..*
+See [./crawler/README.md](./crawler/README.md) for information on crawler.
