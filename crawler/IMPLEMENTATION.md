@@ -5,7 +5,7 @@
 
 * Hashtable: A hashtable is an array of non-null (key, item) pairs, with unique keys, implemented using a set of (key, item) pairs. I used a hashtable to keep track of which URLs have already been visited by the crawler, using each URL as a key and an empty string ("") as the item, since null items are not allowed. Each unique URL is added into the hashtable so that no page is visited twice.
 
-* Bag: A bag is an unordered set of non-null items. It provides the finction `bag_extract()`, which pops one item on every call. I used a bag to keep track of which pages to visit next, just like a stack. Note that `bag_extract()` will pop items in no particular order. Therefore, pages are visited in no particular order starting from depth 0.
+* Bag: A bag is an unordered set of non-null items. It provides the finction `bag_extract()`, which pops one item on every call. I used a bag to keep track of which pages to visit next, just like a stack. Note that `bag_extract()` will pop items in a LIFO order, since it is implemented as a linked list. Therefore, although pages are visited in no particular order starting from depth 0, one can expect the same order on multiple runs of the same command.
 
 ### Pseudocode for each component
 

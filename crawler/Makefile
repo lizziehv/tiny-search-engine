@@ -39,4 +39,5 @@ clean:
 	rm -f *~ *.o
 	rm -f stocks
 	rm -fr data*
+	rm -f $(PROG1)
 

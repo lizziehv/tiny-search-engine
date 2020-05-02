@@ -89,7 +89,7 @@ int main(int argc, char *argv[]){
  */
 int crawler(char *seed_url, char *page_dir, int max_depth, bag_t *bag, hashtable_t *htable){
     /* Make a webpage for the seed url, return on error */
-    char *url = count_malloc(strlen(seed_url)+1);
+    char *url = assertp(count_malloc(strlen(seed_url)+1), "Error: Could not copy URL.");
     strcpy(url, seed_url);
     webpage_t *first_page = webpage_new(url, 0, NULL);
     if(first_page == NULL){
