@@ -1,2 +1,2 @@
-pagedir.o
+*.o
 common.a

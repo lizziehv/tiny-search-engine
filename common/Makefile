@@ -5,7 +5,7 @@
 
 # object files, and the target library
 LDIR = ../libcs50
-OBJS = pagedir.o 
+OBJS = pagedir.o index.o words.o
 LIB = common.a
 
 # add -DNOSLEEP to disable the automatic sleep after web-page fetches
@@ -24,6 +24,8 @@ $(LIB): $(OBJS)
 
 # Dependencies: object files depend on header files
 pagedir.o: pagedir.h
+index.o: index.h
+words.o: words.h
 
 .PHONY: clean sourcelist
 
