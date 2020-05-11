@@ -45,7 +45,11 @@ int index_build(char *page_dir, hashtable_t *htable){
                 /* increment count for word seen */
                 counters_add(ctrs, current_id);
             }
+            /* cleanup */
+            free(word);
         }
+        /* cleanup */
+        webpage_delete(page);
         current_id++;
     }
     return 0;
@@ -81,17 +85,31 @@ int file_to_index(FILE* f_in, hashtable_t *htable){
         
         /* read word */
         int ret, key, count;
-        while((ret=fscanf(f_in, " %d %d", &key, &count))== 2)
-            counters_set(ctrs, key, count);
-        
+        while((ret=fscanf(f_in, " %d %d", &key, &count))== 2){
+            if(!counters_set(ctrs, key, count)){
+                fprintf(stderr, "Error setting counters.");
+                return 1;
 
+            }
+        }
+            
         /* insert word to hashtable */
-        hashtable_insert(htable, word, ctrs);
+        if(!hashtable_insert(htable, word, ctrs)){
+            fprintf(stderr, "Error inserting into inverted index structure.");
+            return 1;           
+        }
 
         free(word);
         word = NULL;
     }
     return 0;
+}
+
+
+/* ############### index_item_delete() ############ */
+/* ############ See index.h for details ########### */
+void index_item_delete(void *item) {
+    counters_delete((counters_t *)item);
 }
 
 /*
@@ -111,3 +129,4 @@ static void printword(void *f_in, const char *key, void *ctrs){
 static void printcounters(void *f_in, const int key, const int count){
     fprintf((FILE *)f_in, " %d %d", key, count);
 }
+

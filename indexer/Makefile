@@ -12,7 +12,7 @@ PROG2= indextest
 PROG = testing.sh
 OBJS1 = indexer.o 
 OBJS2 = indextest.o
-LIB = $(LDIR)/libcs50.a $(CDIR)/common.a
+LIB = $(CDIR)/common.a $(LDIR)/libcs50.a
 
 # add -DNOSLEEP to disable the automatic sleep after web-page fetches
 #               (students, please do not use -DNOSLEEP!)
@@ -29,10 +29,12 @@ MAKE = make
 $(PROG1): $(OBJS1)
 	$(CC) $(CFLAGS) $^ $(LIB) -o $@
 
-$(PROG2): $(OBJS2)$
+$(PROG2): $(OBJS2)
 	$(CC) $(CFLAGS) $^ $(LIB) -o $@
 
 .PHONY: clean test all
+
+all: $(PROG1) $(PROG2)
 
 test: $(PROG)
 	  bash $(PROG)
@@ -44,8 +46,6 @@ clean:
 	rm -f stocks
 	rm -f $(PROG1)
 	rm -f $(PROG2)
+	rm -rf RES/
 
-all:
-	make $(PROG1)
-	make $(PROG2)
 

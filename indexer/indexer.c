@@ -21,7 +21,6 @@
 int HTSIZE = 900;
 
 /* ########### local functions ########### */
-static void index_item_delete(void *item);
 
 int main(int argc, char *argv[]){
     /* Check parameters */
@@ -36,7 +35,7 @@ int main(int argc, char *argv[]){
 
     /* Check validity of arguments */
     if(!is_crawler_directory(page_dir)){
-        fprintf(stderr, "Error: Incorrect 1st argument. Path does not exist or is not a directory.\n");
+        fprintf(stderr, "Error: Incorrect 1st argument. Path does not exist or is not a crawler directory.\n");
         return 1;
     }
     if(!is_valid_file(index_name)){
@@ -68,11 +67,4 @@ int main(int argc, char *argv[]){
 
     hashtable_delete(htable, index_item_delete);
     return 0;
-}
-
-/**
- * Wrapper for counters delete function
- */ 
-static void index_item_delete(void *item) {
-    counters_delete((counters_t *)item);
 }

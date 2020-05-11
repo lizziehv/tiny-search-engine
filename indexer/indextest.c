@@ -18,7 +18,6 @@
 
 
 /* ########### local functions ########### */
-static void index_item_delete(void *item);
 
 int main(int argc, char *argv[]){
     /* Check parameters */
@@ -39,7 +38,7 @@ int main(int argc, char *argv[]){
     }
 
     /* Build inverted index structure */
-    hashtable_t *htable = hashtable_new(lines_in_file(old_index));
+    hashtable_t *htable = hashtable_new(lines_in_file(f_in));
     if(htable == NULL){
         fprintf(stderr, "Error creating structures.\n");
         return 2;       
@@ -62,11 +61,4 @@ int main(int argc, char *argv[]){
     
     hashtable_delete(htable, index_item_delete);
     return 0;
-}
-
-/**
- * Wrapper for counters delete function
- */ 
-static void index_item_delete(void *item) {
-    counters_delete((counters_t *)item);
 }

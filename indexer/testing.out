@@ -1,0 +1,38 @@
+bash testing.sh
+Testing index.c ...
+########### Check validity of arguments ###########
+
+1. Incorrect number of arguments
+Usage error: Incorrect number of arguments.
+Usage error: Incorrect number of arguments.
+
+2. Invalid directory
+Error: Incorrect 1st argument. Path does not exist or is not a crawler directory.
+
+3. Invalid filename
+Error: Incorrect 2nd argument. Incorrect path name.
+
+4. Not a crawler directory
+Error: Incorrect 1st argument. Path does not exist or is not a crawler directory.
+
+########### Use Indexer on different directories ###########
+
+See RES/index1 for output.
+See RES/index2 for output.
+See RES/index3 for output.
+
+Testing indextest.c ...
+########### Check validity of arguments ###########
+
+1. Incorrect number of arguments
+Usage error: Incorrect number of arguments.
+Usage error: Incorrect number of arguments.
+
+2. Incorrect old index file name
+
+########### Tests that should pass ###########
+
+Testing with RES/index1 and RES/new-index1 ...
+Sorting files...
+Comparing files...
+No differences found.

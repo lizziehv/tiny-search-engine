@@ -23,8 +23,8 @@ static int char_counter(int n);
 /* ########### See pagedir.h for details ########### */
 bool directory_exists(char *page_dir){
     /* Test if directory exists by trying to create a new file */
-    char *filename =  assertp(count_malloc(strlen(page_dir)+sizeof(char)+strlen("crawler")+1), "Error: Could not create file."); 
-    sprintf(filename, "%s/%s", page_dir, "crawler");
+    char *filename =  assertp(count_malloc(strlen(page_dir)+sizeof(char)+strlen(".crawler")+1), "Error: Could not create file."); 
+    sprintf(filename, "%s/%s", page_dir, ".crawler");
     FILE *test = fopen(filename, "w");
 
     if(test == NULL){
@@ -72,8 +72,8 @@ int pagesaver(char *page_dir, webpage_t* page, int current_id){
 /* ########### See pagedir.h for details ########### */
 bool is_crawler_directory(char *page_dir){
     /* Create file with filename */
-    char *filename =  assertp(count_malloc(strlen(page_dir)+sizeof(char)+strlen("crawler")+1), "Error: Could not create file."); 
-    sprintf(filename, "%s/%s", page_dir, "crawler");
+    char *filename =  assertp(count_malloc(strlen(page_dir)+sizeof(char)+strlen(".crawler")+1), "Error: Could not create file."); 
+    sprintf(filename, "%s/%s", page_dir, ".crawler");
     FILE *test = fopen(filename, "r");
 
     if(test == NULL){

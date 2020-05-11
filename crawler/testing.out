@@ -35,7 +35,7 @@ Exploring page with url http://old-www.cs.dartmouth.edu/~cs50/data/tse/toscrape/
 At depth 2 >>>>>>>>>>>> see data2 directory for output
 Page '' could not be normalized.
 Could not fetch page http://old-www.cs.dartmouth.edu/~tprioleau/.
-Page '€¼Õ' could not be normalized.
+Page '€œæ' could not be normalized.
 Exploring page with url http://old-www.cs.dartmouth.edu/~cs50/index.html...
 Found external url: https://canvas.dartmouth.edu/courses/37948.
 Found external url: https://piazza.com/dartmouth/winter2020/cosc50wi20.

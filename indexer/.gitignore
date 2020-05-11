@@ -1,1 +1,4 @@
 *.o
+RES
+indexer
+indextest
