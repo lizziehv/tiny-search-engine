@@ -11,7 +11,7 @@ all:
 	$(MAKE) -C libcs50
 	$(MAKE) -C common
 	$(MAKE) -C crawler
-	$(MAKE) -C indexer
+	$(MAKE) all -C indexer
 	# $(MAKE) -C querier
 
 ############## valgrind all programs ##########
@@ -27,7 +27,7 @@ TAGS:  Makefile */Makefile */*.c */*.h */*.md */*.sh
 ############## clean  ##########
 clean:
 	rm -f *~
-	rm -f TAGS
+	# rm -f TAGS
 	$(MAKE) -C libcs50 clean
 	$(MAKE) -C common clean
 	$(MAKE) -C crawler clean
