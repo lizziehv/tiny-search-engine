@@ -30,6 +30,7 @@ int word_counter(char *line);
 static void divide_query(char *line, char *words[], int count);
 bool parse_query(char *words[], int count);
 bool query(counters_t* result, hashtable_t *index, char *words[], int count);
+void query_results(counters_t* result);
 
 /* #### item functions for iterating #### */
 void counters_add_all(void *arg, const int key, const int count);
@@ -274,7 +275,6 @@ void query_results(counters_t* result){
     /* Find counter's size */
     int size = 0;
     counters_iterate(result, &size, counters_count);
-
 }
 
 /* ############## item functions for iterating ############## */

@@ -8,7 +8,7 @@ CDIR=../common
 PROG1= querier
 PROG = testing.sh
 OBJS = querier.o 
-LIB = $(LDIR)/libcs50.a $(CDIR)/common.a
+LIB = $(CDIR)/common.a $(LDIR)/libcs50.a 
 
 FLAGS =
 CFLAGS = -Wall -pedantic -std=c11 -ggdb $(FLAGS) -I $(LDIR) -I $(CDIR)
