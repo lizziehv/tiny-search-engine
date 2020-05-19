@@ -65,4 +65,17 @@ bool is_valid_file(char* filename);
  */
 webpage_t* file_to_webpage(char* page_dir, int current_id);
 
+/* @param page_dir - name of crawler directory (it is assumed it has the correct format)
+ * @param docID - id of webpage file in the directory
+ * 
+ * @return pointer to url of webpage
+ */ 
+char * get_url(char *page_dir, int current_id);
+
+/* @param n
+ *
+ * @return number of digits in n
+ */ 
+int char_counter(int n);
+
 #endif

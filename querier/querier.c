@@ -6,38 +6,33 @@
  * 
  * See DESIGN.md for more information about the querier
  */
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <ctype.h>
-#include "hashtable.h"
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
-#include "pagedir.h"
+
 #include "hashtable.h"
+#include "pagedir.h"
 #include "counters.h"
 #include "index.h"
 #include "file.h"
 #include "words.h"
-#include <stdbool.h>
+#include "iterating.h"
 
+/* ######## functions from imports ######## */
+int fileno(FILE *stream);
 
 /* ########### global variables ########### */
 
-/* ########### local functions ########### */
-int fileno(FILE *stream);
-static void prompt(void);
+/* ########### local functions ############ */
+void prompt(void);
 int word_counter(char *line);
-static void divide_query(char *line, char *words[], int count);
+void divide_query(char *line, char *words[], int count);
 bool parse_query(char *words[], int count);
 bool query(counters_t* result, hashtable_t *index, char *words[], int count);
-void query_results(counters_t* result);
-
-/* #### item functions for iterating #### */
-void counters_add_all(void *arg, const int key, const int count);
-void counters_merge(void *arg, const int key, const int count);
-void counters_intersect(void *arg, const int key, const int count);
-void counters_shrink(void *arg, const int key, const int count);
-void counters_count(void *arg, const int key, const int count);
+void print_results(counters_t* result, char* pade_dir);
 
 int main(int argc, char *argv[]){
     /* Check parameters */
@@ -89,11 +84,12 @@ int main(int argc, char *argv[]){
             if(parse_query(words, count)){
                 /* Query */
                 counters_t* result = counters_new();
-                query(result, htable, words, count);
-
-                /* Print results */
-                query_results(result);
-
+                if(query(result, htable, words, count)){
+                    /* Print results */
+                    print_results(result, page_dir);
+                }
+                else
+                    fprintf(stderr, "Error initializing structures.\n");
             }
         }
         
@@ -101,46 +97,38 @@ int main(int argc, char *argv[]){
         free(line);
         prompt();
     }
+
+    hashtable_delete(htable, index_item_delete);
     
 }
 
 /*
  * Function to print query prompt
  */ 
-static void prompt(void){   
+void prompt(void){   
     if (isatty(fileno(stdin))) {
         printf("Query? ");
     }
 }
 
-/*
- * Function to parse a query line
- */ 
-static void divide_query(char *line, char *words[], int count){
-    int j = 0;
-    for(int i= 0; i<count; i++){
-        while(isspace(line[j]))     // skip all white spaces before word
-            j++;
-        
-        words[i] = &line[j];        // assign item at index j to new word found
-        
-        while(isalpha(line[j]))     // skip all alphabetic characters
-            j++;
-
-        line[j] = '\0';             // end word
-    }
-}
-
+/* @param char *line
+ * 
+ * Count the number of words in a line for size of word array
+ * 
+ * @return number of words in line
+ */
 int word_counter(char *line){
     /* Count the number of words */
     int count = 0;
+
+    if(strlen(line) == 0) return 0;
 
     if(isalpha(line[0])) count++;
 
     for(int i =1; i< strlen(line); i++){
         if(isalpha(line[i]) && isspace(line[i-1]))
             count++;
-        else if(!isalpha(line[i]) || !isspace(line[i])){
+        else if(!isalpha(line[i]) && !isspace(line[i])){
             fprintf(stderr, "Bad character in query %c.\n", line[i]);
             return 0;
         }
@@ -148,10 +136,62 @@ int word_counter(char *line){
     return count;
 }
 
+
+/* @param char *line - pointer to line to be divided
+ * @param char *words[] - array of strings (empty)
+ * @param int count - number of words in string array
+ * 
+ * Function to divide query line into an arrray of words
+ * 
+ * @return void
+ */ 
+void divide_query(char *line, char *words[], int count){
+    // int max = strlen(line);
+    // int j = 0, k = 0;
+    // for(int i=0; i <max; i++){
+    //     /* Found new word */
+    //     if(isalpha(line[i])){
+    //         words[j] = &line[i];                // assign item at index j to new word found
+    //         j++;
+
+    //         while(i < max-1 && isalpha(line[i]))  // skip all alphabetic characters
+    //             i++;
+            
+    //         if(isspace(line[i])){
+                
+    //         }
+    //     }
+    // }
+    char *token = strtok(line, " \t");
+
+    int i = 0;
+    while (token != NULL && i < count) {
+        words[i] = token; 
+        token = strtok(NULL, " \t");
+        i++;
+    }
+    
+}
+
+/* @param char *words[] - array of strings (empty)
+ * @param int count - number of words in string array
+ * 
+ * Normalize each word in words
+ * Output query
+ * Check if the format is valid
+ * <and sequence> or <and sequence> etc.
+ * 
+ * @return false if a word contains a non alphabetic character or
+ *         format is invalid: consecutive ANDs, ORs, or query starts
+ *         with AND, OR
+ * @return true if success (valid format ans)
+ */ 
 bool parse_query(char *words[], int count){
     /* Normalize all words (to lower case) */
-    for(int i = 0; i< count; i++)
-        normalize_word(words[i]);
+    for(int i = 0; i< count; i++){
+        if(!normalize_word(words[i])) 
+            return false;
+    }
 
     /* Print query */
     fprintf(stdout, "Query:");
@@ -189,35 +229,44 @@ bool parse_query(char *words[], int count){
     return true;
 }
 
+/* @param result - empty counters set to insert query results
+ * @param index - inverted-index structure
+ * @param words - array of strings containing words
+ * @param count - number of words
+ * 
+ * Find query results by mering and sequences
+ * 
+ * @return false if any error initializing structures
+ * @return true if success
+ */ 
 bool query(counters_t* result, hashtable_t *index, char *words[], int count){
-    counters_t* res_and = counters_new();
-    counters_t* res_or = counters_new();
+    counters_t* res_and = counters_new();       // keeps track of current sequence counters
+    counters_t* res_or = counters_new();        // keeps track of results from all sequences seen thus far                                            
 
+    /* return on any error */
     if(res_and==NULL || res_or == NULL){
         fprintf(stderr, "Could not initialize structures.\n");
         return false;
     }
 
-    /* Add first word to res_and */
-
     for(int i = 0; i<= count ; i++){
         /* Resolve an end of sequence by finding th union of res_or and res_and */
-        if(strcmp(words[i], "or") == 0 || i == count){
+        
+        if( i == count || strcmp(words[i], "or") == 0){
             /* Move result and to result or (merge) */
             counters_t* merged = counters_new();
             if(merged == NULL){
                 return false;
             }
             
-            counters_iterate(merged, res_and, counters_merge);
-            counters_iterate(merged, res_or, counters_merge);
+            counters_iterate(res_and, merged, counters_merge);
+            counters_iterate(res_or, merged, counters_merge);
 
             /* restart counters */
-            counters_delete(res_and);
-            counters_delete(res_or);
-
             res_or = merged;
 
+            counters_delete(res_and);
+        
             res_and = counters_new();
             if(res_and == NULL){
                 return false;
@@ -227,6 +276,7 @@ bool query(counters_t* result, hashtable_t *index, char *words[], int count){
         else if(strcmp(words[i], "and") != 0){
             /* Get word's counters */
             counters_t* ctrs = hashtable_find(index, words[i]);
+            
             /* If word found */
             if(ctrs != NULL){
                 /* If found start of a new and sequence, add all to res_and */
@@ -239,9 +289,10 @@ bool query(counters_t* result, hashtable_t *index, char *words[], int count){
                     counters_t* intersection = counters_new();
 
                     /* Find union with lesser values */
+                    counters_iterate(res_and, ctrs, counters_intersect);
                     counters_iterate(ctrs, res_and, counters_intersect);
                     /* Keep only items in both counters */
-                    counters_iterate(intersection, res_and, counters_shrink);
+                    counters_iterate(res_and, intersection, counters_add_all);
 
                     counters_delete(res_and);
                     res_and = intersection;
@@ -249,13 +300,14 @@ bool query(counters_t* result, hashtable_t *index, char *words[], int count){
             }
             /* Else, ignore rest of the sequence (intersection is empty) */
             else{
-                /* Empty res_and */
+                /* Empty res_and, create new one */
                 counters_delete(res_and);
                 res_and = counters_new();
+                if(res_and == NULL)
+                    return false;
 
                 /* Skip to next sequence or end of query */
-                i++;
-                while(i<=count && strcmp(words[i], "or") == 0) 
+                while(i<count-1 && strcmp(words[i + 1], "or") == 0) 
                     i++;
             }
         }
@@ -271,45 +323,38 @@ bool query(counters_t* result, hashtable_t *index, char *words[], int count){
     return true; 
 }
 
-void query_results(counters_t* result){
+void print_results(counters_t* result, char* page_dir){
     /* Find counter's size */
     int size = 0;
     counters_iterate(result, &size, counters_count);
-}
 
-/* ############## item functions for iterating ############## */
-
-void counters_add_all(void *arg, const int key, const int count){
-    counters_set((counters_t*)arg, key, count);
-}
-
-void counters_merge(void *arg, const int key, const int count){
-    counters_set((counters_t*)arg, key, count + counters_get(arg, key));
-}
-
-void counters_intersect(void *arg, const int key, const int count){
-    /* Get value from the other counter */
-    counters_t* other_counter = (counters_t*)arg;
-    int other_count = counters_get(other_counter, key);
-
-    /* Keep the smallest value */
-    int lesser_value;
-    if(other_count < count)
-        lesser_value = other_count;
-    else
-        lesser_value = count;
-    
-    counters_set(other_counter, key, lesser_value);
-}
-
-void counters_shrink(void *arg, const int key, const int count){
-    counters_t* other_counter = (counters_t*)arg;
-    if(count > 0){
-        counters_set(other_counter, key, count);
+    if(size == 0){
+        fprintf(stdout, "No documents match.\n");
     }
-}
+    else{
+        fprintf(stdout, "Matches %d documents (ranked):\n", size);
+        ctr_t* res_list[size + 1];
+        ctr_t* index_pair = ctr_new(-1, 1);
+        res_list[0] = index_pair;
 
-void counters_count(void *arg, const int key, const int count){
-    int* size = (int *)arg;
-    size++;
+        /* insert all results into array and sort */
+        counters_iterate(result, res_list, counters_to_array);
+
+        /* print each result */
+        int padding = char_counter(ctr_get_score(res_list[1]));
+        for(int i=1; i< size+1; i++){
+            /* get url */
+            char* url = get_url(page_dir, ctr_get_key(res_list[i]));
+            fprintf(stdout, "score %*d doc %d: %s\n", padding, ctr_get_score(res_list[i]), ctr_get_key(res_list[i]), url);
+            free(url);
+        }
+
+        /* clean up */
+        for(int i=0; i< size + 1; i++){
+            free(res_list[i]);
+        }
+        
+    }
+
+    fprintf(stdout, "-----------------------------------------------\n");
 }

@@ -75,7 +75,7 @@ int file_to_index(FILE* f_in, hashtable_t *htable){
         /* read word */
         char* word = freadwordp(f_in);
         if(word == NULL){
-            fprintf(stderr, "Incorrect format in line %d.", i);
+            fprintf(stderr, "Incorrect format in line %d.\n", i);
         }
 
         /* create counters */
@@ -87,7 +87,7 @@ int file_to_index(FILE* f_in, hashtable_t *htable){
         int ret, key, count;
         while((ret=fscanf(f_in, " %d %d", &key, &count))== 2){
             if(!counters_set(ctrs, key, count)){
-                fprintf(stderr, "Error setting counters.");
+                fprintf(stderr, "Error setting counters.\n");
                 return 1;
 
             }
@@ -95,7 +95,7 @@ int file_to_index(FILE* f_in, hashtable_t *htable){
             
         /* insert word to hashtable */
         if(!hashtable_insert(htable, word, ctrs)){
-            fprintf(stderr, "Error inserting into inverted index structure.");
+            fprintf(stderr, "Error inserting into inverted index structure.\n");
             return 1;           
         }
 

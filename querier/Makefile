@@ -7,7 +7,7 @@ CDIR=../common
 
 PROG1= querier
 PROG = testing.sh
-OBJS = querier.o 
+OBJS = querier.o iterating.o
 LIB = $(CDIR)/common.a $(LDIR)/libcs50.a 
 
 FLAGS =
@@ -17,6 +17,9 @@ MAKE = make
 
 $(PROG1): $(OBJS)
 	$(CC) $(CFLAGS) $^ $(LIB) -o $@
+
+# Dependencies object files depend on header files
+iterating.o: iterating.h
 
 .PHONY:  clean test
 

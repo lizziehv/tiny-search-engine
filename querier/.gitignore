@@ -1,2 +1,4 @@
-querier.o
+*.o
 querier
+test1/
+index
