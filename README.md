@@ -33,4 +33,4 @@ Each of the three directories *crawler*, *indexer*, and *querier* contains
     - `testing.sh` to test the commands 
     - any other testing files needed for `testing.sh`
 
-Libraries used are [common](./common/common.a) and [libcs50](./libcs50/libcs50.a), found in common/ and libcs50/, respectively. Each can be compiled by running `make` from the directory root.
+Libraries used are [common](./common/README.md) and [libcs50](./libcs50/README.md), found in common/ and libcs50/, respectively. Each can be compiled by running `make` from the directory root.
