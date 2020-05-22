@@ -5,7 +5,7 @@ title: TSE Querier Design Spec
 ---
 
 # CS50 Lab 4 Indexer Design
-## Lizzie Hernandez, CS50 Winter 2020
+## Lizzie Hernandez, CS50 Spring 2020
 
 
 Recall the [Querier Requirements Spec](REQUIREMENTS.md); the **querier** reads an index from an index-produced file to produce an inverted index structure and satisfy queries by ranking results found according to a score.

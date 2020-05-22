@@ -1,5 +1,5 @@
 # CS50 Lab 4 Querier Implementation
-## Lizzie Hernandez, CS50 Winter 2020
+## Lizzie Hernandez, CS50 Spring 2020
 
 ### Data structures used
 
