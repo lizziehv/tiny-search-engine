@@ -20,6 +20,7 @@
 #include "file.h"
 #include "words.h"
 #include "iterating.h"
+#include "tuple.h"
 
 /* ######## functions from imports ######## */
 int fileno(FILE *stream);
@@ -32,6 +33,7 @@ int word_counter(char *line);
 void divide_query(char *line, char *words[], int count);
 bool parse_query(char *words[], int count);
 bool query(counters_t* result, hashtable_t *index, char *words[], int count);
+static counters_t * resolve_sequence(hashtable_t *index, char *words[], int count, int* current);
 void print_results(counters_t* result, char* pade_dir);
 
 int main(int argc, char *argv[]){
@@ -60,7 +62,8 @@ int main(int argc, char *argv[]){
     /* Build inverted index structure */
     hashtable_t *htable = hashtable_new(lines_in_file(index));
     if(htable == NULL){
-        fprintf(stderr, "Error creating index structure.\n");
+        fclose(index);
+        fprintf(stderr, "Error allocating memory for structures.\n");
         return 2;       
     }
 
@@ -68,7 +71,7 @@ int main(int argc, char *argv[]){
     if(ret != 0){
         hashtable_delete(htable, index_item_delete);
         fclose(index);
-        return 3;
+        return 2;
     }
     fclose(index);
 
@@ -88,18 +91,29 @@ int main(int argc, char *argv[]){
                     /* Print results */
                     print_results(result, page_dir);
                 }
-                else
-                    fprintf(stderr, "Error initializing structures.\n");
+                else{
+                    /* return on error */
+                    free(line);
+                    line = NULL;
+                    hashtable_delete(htable, index_item_delete);
+                    htable = NULL;
+
+                    return 2;
+                }
+                counters_delete(result);
             }
         }
         
         /* Next query */
         free(line);
+        line = NULL;
         prompt();
     }
 
     hashtable_delete(htable, index_item_delete);
-    
+    htable = NULL;
+
+    return 0;
 }
 
 /*
@@ -146,31 +160,24 @@ int word_counter(char *line){
  * @return void
  */ 
 void divide_query(char *line, char *words[], int count){
-    // int max = strlen(line);
-    // int j = 0, k = 0;
-    // for(int i=0; i <max; i++){
-    //     /* Found new word */
-    //     if(isalpha(line[i])){
-    //         words[j] = &line[i];                // assign item at index j to new word found
-    //         j++;
-
-    //         while(i < max-1 && isalpha(line[i]))  // skip all alphabetic characters
-    //             i++;
-            
-    //         if(isspace(line[i])){
-                
-    //         }
-    //     }
-    // }
-    char *token = strtok(line, " \t");
-
     int i = 0;
-    while (token != NULL && i < count) {
-        words[i] = token; 
-        token = strtok(NULL, " \t");
-        i++;
+    for(char *cp = line; *cp != '\0'; cp++){
+        if(isalpha(*cp)){
+            /* Insert pointer to first character in word to array */
+            words[i] = cp;
+            i++;
+            /* Skip all letters */
+            while(*cp != '\0' && isalpha(*cp))
+                cp++;
+            /* Insert end of string at the end */
+            if(isspace(*cp)){
+                *cp = '\0';
+            }
+            else{
+                break;
+            }   
+        }
     }
-    
 }
 
 /* @param char *words[] - array of strings (empty)
@@ -234,95 +241,110 @@ bool parse_query(char *words[], int count){
  * @param words - array of strings containing words
  * @param count - number of words
  * 
- * Find query results by mering and sequences
+ * Find query results by merging and_sequences
  * 
  * @return false if any error initializing structures
  * @return true if success
  */ 
 bool query(counters_t* result, hashtable_t *index, char *words[], int count){
-    counters_t* res_and = counters_new();       // keeps track of current sequence counters
-    counters_t* res_or = counters_new();        // keeps track of results from all sequences seen thus far                                            
-
-    /* return on any error */
-    if(res_and==NULL || res_or == NULL){
-        fprintf(stderr, "Could not initialize structures.\n");
-        return false;
-    }
-
-    for(int i = 0; i<= count ; i++){
-        /* Resolve an end of sequence by finding th union of res_or and res_and */
-        
-        if( i == count || strcmp(words[i], "or") == 0){
-            /* Move result and to result or (merge) */
-            counters_t* merged = counters_new();
-            if(merged == NULL){
-                return false;
-            }
-            
-            counters_iterate(res_and, merged, counters_merge);
-            counters_iterate(res_or, merged, counters_merge);
-
-            /* restart counters */
-            res_or = merged;
-
+    int i;
+    for(i = 0; i< count ; i++){
+        counters_t *res_and = resolve_sequence(index, words, count, &i);
+        if(res_and != NULL){
+            /* Add to results by finding union */
+            counters_iterate(res_and, result, counters_merge);
             counters_delete(res_and);
-        
-            res_and = counters_new();
-            if(res_and == NULL){
-                return false;
-            }
+            res_and = NULL;
         }
-        /* Resolve sequences */
-        else if(strcmp(words[i], "and") != 0){
+        else{
+            /* error loading structures */
+            return false;
+        }
+    }
+    return true; 
+}
+
+/* Helper function for query()
+ * 
+ * @param result - empty counters set to insert query results
+ * @param index - inverted-index structure
+ * @param words - array of strings containing words
+ * @param count - number of words
+ * @param current - index in words where current index was found
+ * 
+ * Function will find the intersection of all words in a sequence
+ * Update current index to point to the beginning of the next sequence
+ * 
+ * @return pointer to counters containing intersection
+ *         NULL for any error
+ */ 
+static counters_t * resolve_sequence(hashtable_t *index, char *words[], int count, int* current){
+    counters_t *res_and = counters_new();   // keeps track of intersection of word counters in a sequence
+    if(res_and == NULL){
+        fprintf(stderr, "Error allocating memory for structures.\n");
+        return NULL;
+    }
+    int i;
+    for(i = *current; i< count && strcmp(words[i], "or") != 0; i++){
+        if(strcmp(words[i], "and") != 0){
             /* Get word's counters */
             counters_t* ctrs = hashtable_find(index, words[i]);
             
             /* If word found */
             if(ctrs != NULL){
-                /* If found start of a new and sequence, add all to res_and */
+                /* If found start of a new and sequence, add all to result */
                 if(i == 0 || strcmp(words[i-1], "or")==0){
                     counters_iterate(ctrs, res_and, counters_add_all);
                 }
                 /* If its the rest of a sequence */
                 else{
-                    /* Interect ctrs with res_and */
+                    /* Intersect ctrs with result */
                     counters_t* intersection = counters_new();
+                    if(intersection == NULL){
+                        fprintf(stderr, "Error allocating memory for structures.\n");
+                        /* Clean up*/
+                        counters_delete(res_and);
+                        res_and = NULL;
+                        return NULL;
+                    }
 
-                    /* Find union with lesser values */
+                    /* Find intersection with lesser values */
                     counters_iterate(res_and, ctrs, counters_intersect);
                     counters_iterate(ctrs, res_and, counters_intersect);
                     /* Keep only items in both counters */
                     counters_iterate(res_and, intersection, counters_add_all);
 
                     counters_delete(res_and);
+                    res_and = NULL;
                     res_and = intersection;
                 }
             }
             /* Else, ignore rest of the sequence (intersection is empty) */
             else{
-                /* Empty res_and, create new one */
-                counters_delete(res_and);
-                res_and = counters_new();
-                if(res_and == NULL)
-                    return false;
-
                 /* Skip to next sequence or end of query */
-                while(i<count-1 && strcmp(words[i + 1], "or") == 0) 
+                while(i<count && strcmp(words[i], "or") != 0)
                     i++;
+
+                counters_delete(res_and);
+                *current = i;
+                return counters_new();
             }
         }
     }
-
-    /* Add to final result */
-    counters_iterate(res_or, result, counters_add_all);
-
-    /* Clean up*/
-    counters_delete(res_and);
-    counters_delete(res_or);
-
-    return true; 
+    /* Move current index to end of sequence */
+    *current = i;
+    /* Return intersection set */
+    return res_and;
 }
 
+
+/* @param result - counter with results from query
+ * @param page_dir - crawler produced directory where pages come from 
+ * 
+ * Print results to stdout. Pages ranked with format
+ * score <score> doc <doc>: <url>
+ * 
+ */ 
 void print_results(counters_t* result, char* page_dir){
     /* Find counter's size */
     int size = 0;
@@ -333,19 +355,19 @@ void print_results(counters_t* result, char* page_dir){
     }
     else{
         fprintf(stdout, "Matches %d documents (ranked):\n", size);
-        ctr_t* res_list[size + 1];
-        ctr_t* index_pair = ctr_new(-1, 1);
-        res_list[0] = index_pair;
+        tuple_t* res_list[size + 1];
+        tuple_t* index_pair = tuple_new(-1, 1); // first tuple inserted is used to keep track of where the 
+        res_list[0] = index_pair;               // next item should be inserted, updated by iteration
 
         /* insert all results into array and sort */
         counters_iterate(result, res_list, counters_to_array);
 
         /* print each result */
-        int padding = char_counter(ctr_get_score(res_list[1]));
+        int padding = char_counter(tuple_get_score(res_list[1]));
         for(int i=1; i< size+1; i++){
             /* get url */
-            char* url = get_url(page_dir, ctr_get_key(res_list[i]));
-            fprintf(stdout, "score %*d doc %d: %s\n", padding, ctr_get_score(res_list[i]), ctr_get_key(res_list[i]), url);
+            char* url = get_url(page_dir, tuple_get_key(res_list[i]));
+            fprintf(stdout, "score %*d doc %d: %s\n", padding, tuple_get_score(res_list[i]), tuple_get_key(res_list[i]), url);
             free(url);
         }
 
@@ -358,3 +380,6 @@ void print_results(counters_t* result, char* page_dir){
 
     fprintf(stdout, "-----------------------------------------------\n");
 }
+
+
+

@@ -9,50 +9,7 @@
 #include "counters.h"
 #include "iterating.h"
 #include "memory.h"
-
-/**************** local types ****************/
-typedef struct counter {
-    int key;
-    int score;
-} ctr_t;
-
-/**************** local functions ****************/
-/* not visible outside this file */
-static void ctr_update_score(ctr_t* pair);
-
-/**************** ctr_new() ****************/
-ctr_t *ctr_new(int key, int score){
-    // allocate space for node
-    ctr_t *pair = (ctr_t *)count_malloc(sizeof(ctr_t));
-
-    if(pair!=NULL){
-        // set key 
-        pair->key = key;
-        pair->score = score;
-    }
-    
-    return pair;
-}
-
-/**************** get_score() ****************/
-int ctr_get_score(ctr_t* pair){
-    if(pair != NULL)
-        return pair->score;
-    return 0;
-}
-
-/**************** get_score() ****************/
-int ctr_get_key(ctr_t* pair){
-    if(pair != NULL)
-        return pair->key;
-    return 0;
-}
-
-/**************** update_score() ****************/
-static void ctr_update_score(ctr_t* pair){
-    if(pair != NULL)
-        pair->score = pair->score + 1;
-}
+#include "tuple.h"
 
 /*########### counters_add_all ##########*/
 /*##### See iterating.h for details #####*/
@@ -96,18 +53,18 @@ void counters_count(void *arg, const int key, const int count){
 /*############ counters_count ###########*/
 /*##### See iterating.h for details #####*/
 void counters_to_array(void *arg, const int key, const int count){
-    ctr_t** array = (ctr_t**)arg;
+    tuple_t** array = (tuple_t**)arg;
     
     /* create a new pair to be inserted */
-    ctr_t* new = ctr_new(key, count);
+    tuple_t* new = tuple_new(key, count);
     if(new != NULL){
         /* keep index at which it shoud be located */
-        int i = ctr_get_score(array[0]);
-        ctr_update_score(array[0]);
+        int i = tuple_get_score(array[0]);
+        tuple_update_score(array[0]);
 
         /* move to right position using insertion sort */
         int j = i-1;
-        while(j > 0 && count > ctr_get_score(array[j])){
+        while(j > 0 && count > tuple_get_score(array[j])){
             /* Move j to the next index */
             array[j + 1] = array[j];
             j--;

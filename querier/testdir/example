@@ -1,0 +1,23 @@
+Query: tiny search engine
+No documents match.
+-----------------------------------------------
+Query: computer or science
+Matches 7 documents (ranked):
+score 404 doc 7: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Computer_science.html
+score  17 doc 2: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Linked_list.html
+score  11 doc 3: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Hash_table.html
+score  10 doc 4: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Dartmouth_College.html
+score   8 doc 6: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/C_(programming_language).html
+score   6 doc 5: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Unix.html
+score   2 doc 1: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/
+-----------------------------------------------
+Query: dartmouth or computer science or programming or unix
+Matches 7 documents (ranked):
+score 422 doc 4: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Dartmouth_College.html
+score 222 doc 5: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Unix.html
+score 195 doc 7: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Computer_science.html
+score  93 doc 6: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/C_(programming_language).html
+score  13 doc 2: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Linked_list.html
+score  10 doc 3: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Hash_table.html
+score   4 doc 1: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/
+-----------------------------------------------

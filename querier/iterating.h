@@ -21,11 +21,9 @@
  *        of counter_iterate)
  *  
  */
-#include "counters.h"
 
-typedef struct counter ctr_t;
- 
-ctr_t *ctr_new(int key, int score);
+#include "counters.h"
+#include "tuple.h"
 
 
 /* If called on counter1 (should be an empty counter) with arg counter2, 
@@ -55,8 +53,13 @@ void counters_intersect(void *arg, const int key, const int count);
  */
 void counters_count(void *arg, const int key, const int count);
 
+/* If called on counter1 with argument to an empty array of tuple pointers
+ * tuple_t *array[], will insert a (key, item) pair into array in decreasing 
+ * order using an insertion sort approach.
+ * 
+ * array must have as the first element a tuple with score=1 and any integer
+ * value key
+ * 
+ * (Used to insert counters into array starting at index 1)
+ */
 void counters_to_array(void *arg, const int key, const int count);
-
-int ctr_get_score(ctr_t* pair);
-
-int ctr_get_key(ctr_t* pair);

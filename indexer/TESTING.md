@@ -6,7 +6,7 @@
 To test my *indexer* module I wrote a test program, [testing.sh](testing.sh), to explore the capabilities of the *indexer* program and visualize output of running the program with valid or invalid parameters.
 
 ### Test file explanation
-The `testing.sh` file will test the follwoing capabilities of the *indexer* program:
+The `testing.sh` file will test the following capabilities of the *indexer* program:
 
 1. Validation of arguments (for both `indexer.c` and `indextest.c`): 
 	- Tests incorrect number of parameters given

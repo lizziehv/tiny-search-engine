@@ -14,10 +14,10 @@
 /* ########### See words.h for details ########### */
 bool normalize_word(char* string){
     /* loop through characters in string */
-    for(int i = 0; i<strlen(string); i++){
-        char c  = string[i];
+    for(char *cp = string; *cp != '\0'; cp++){
+        char c  = *cp;
         if(isalpha(c)){
-            string[i] = tolower(c);
+            *cp = tolower(c);
         }
         else
             return false;

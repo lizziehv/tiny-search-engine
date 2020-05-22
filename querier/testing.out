@@ -1,0 +1,107 @@
+bash testing.sh
+########### Check validity of arguments ###########
+
+1. Incorrect number of arguments
+Usage error: Incorrect number of arguments.
+Usage error: Incorrect number of arguments.
+
+2. Invalid directory
+Error: Incorrect 1st argument. Path does not exist or is not a crawler directory.
+
+3. Invalid filename
+Error: Incorrect 2nd argument.
+
+4. Not a crawler directory
+Error: Incorrect 1st argument. Path does not exist or is not a crawler directory.
+
+########### Use querier on different query inputs ###########
+Testing queries that should fail...
+Syntax error: Cannot start query with and.
+Syntax error: Cannot start query with and.
+Syntax error: Cannot end query with or.
+Bad character in query -.
+Query: and
+Query: and or
+Query: hello or
+Query: tiny search engine
+No documents match.
+-----------------------------------------------
+Using input for which results are known...
+Comparing files...
+No differences found.
+
+Generating random queries with fuzzquery...
+./fuzzquery: generating 10 queries from 6506 words
+./fuzzquery: generating 10 queries from 6506 words
+Bad character in query -.
+Query: ingold
+No documents match.
+-----------------------------------------------
+Query: wizard ranked or creating or inspired or local detected
+Matches 5 documents (ranked):
+score 4 doc 2: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Linked_list.html
+score 2 doc 6: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/C_(programming_language).html
+score 2 doc 4: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Dartmouth_College.html
+score 2 doc 5: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Unix.html
+score 1 doc 3: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Hash_table.html
+-----------------------------------------------
+Query: hardware stricter or surrounding
+Matches 2 documents (ranked):
+score 2 doc 6: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/C_(programming_language).html
+score 1 doc 4: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Dartmouth_College.html
+-----------------------------------------------
+Query: assumptions and quinnipiac singles diplomas
+No documents match.
+-----------------------------------------------
+Query: exist refers or dramatic significant or wgulsacceptlanguagelist slot
+Matches 2 documents (ranked):
+score 1 doc 2: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Linked_list.html
+score 1 doc 3: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Hash_table.html
+-----------------------------------------------
+Query: syringotome and exceeds
+No documents match.
+-----------------------------------------------
+Query: thegnly and physician object or vindications or members
+Matches 3 documents (ranked):
+score 15 doc 2: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Linked_list.html
+score 12 doc 4: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Dartmouth_College.html
+score  1 doc 3: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Hash_table.html
+-----------------------------------------------
+Query: tend peripherals and macro battle performing uroscopic
+No documents match.
+-----------------------------------------------
+Query: expressionful somenode and wordnet or walston lane
+No documents match.
+-----------------------------------------------
+Bad character in query -.
+Bad character in query -.
+Query: wall isn
+Matches 1 documents (ranked):
+score 1 doc 4: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Dartmouth_College.html
+-----------------------------------------------
+Query: lwn marching osi
+No documents match.
+-----------------------------------------------
+Query: collisions or ineffective and achievable
+Matches 1 documents (ranked):
+score 13 doc 3: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Hash_table.html
+-----------------------------------------------
+Query: linuxjournal mesg or casey and astronomy
+No documents match.
+-----------------------------------------------
+Query: expressions winner and enotifwatchlistpages
+No documents match.
+-----------------------------------------------
+Query: filesystem and megascale and endowment users
+No documents match.
+-----------------------------------------------
+Query: csli or telescopes or geology disambiguation ranges pichurim
+Matches 1 documents (ranked):
+score 2 doc 7: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Computer_science.html
+-----------------------------------------------
+Query: multics or internationals or relative
+Matches 3 documents (ranked):
+score 8 doc 5: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Unix.html
+score 2 doc 4: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/Dartmouth_College.html
+score 1 doc 6: http://old-www.cs.dartmouth.edu/~cs50/data/tse/wikipedia/C_(programming_language).html
+-----------------------------------------------
