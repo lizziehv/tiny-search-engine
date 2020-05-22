@@ -1,9 +1,9 @@
-# Lizzie Hernandez Videa
 <img src="image.jpg"
      alt="search engine image"
      style="" />
 
-GitHub username: lizziehv
+### Lizzie Hernandez Videa
+#### GitHub username: lizziehv
 
 ~ This is the repository for the Tiny Search Engine (TSE). ~
 
