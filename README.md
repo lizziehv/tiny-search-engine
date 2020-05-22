@@ -1,10 +1,9 @@
 # Lizzie Hernandez Videa
-GitHub username: lizziehv
-
 <img src="image.jpg"
      alt="search engine image"
      style="" />
 
+GitHub username: lizziehv
 
 ~ This is the repository for the Tiny Search Engine (TSE). ~
 
@@ -35,6 +34,3 @@ Each of the three directories *crawler*, *indexer*, and *querier* contains
     - any other testing files needed for `testing.sh`
 
 Libraries used are [common](./common/common.a) and [libcs50](./libcs50/libcs50.a), found in common/ and libcs50/, respectively. Each can be compiled by running `make` from the directory root.
-
-
-float: left; margin-right: 10px;
