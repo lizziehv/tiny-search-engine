@@ -24,16 +24,16 @@ run `make` or `make all` (see READMEs  for instructions) and `make test`.
 
 Each of the three directories *crawler*, *indexer*, and *querier* contains
 
-### Documentation:
+- Documentation:
     - README - general information
     - REQUIREMENTS - basic requirements for the program 
     - DESIGN - design plan for the program
     - IMPLEMENTATION - details about program implementation, including data structures, pseudocode, resource management, dependencies, etc.
 
-### Program:
+- Program:
     - .c and .h files for the program and any other programs used
 
-### Testing script
+- Testing script
     - `testing.sh` to test the commands 
     - any other testing files needed for `testing.sh`
 
